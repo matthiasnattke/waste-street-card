@@ -1,7 +1,7 @@
 /* Waste Street Card – waste collection calendar as a street scene: bins that are due stand at the kerb.
    Works with any calendar entity (e.g. Waste Collection Schedule, ICS, local calendar).
    MIT License – see LICENSE */
-const WST_VERSION = '1.0.0';
+const WST_VERSION = '1.0.2';
 const WST_LANG = (h) => { const l = ((h && ((h.locale && h.locale.language) || h.language)) || 'en').slice(0, 2); return l === 'de' ? 'de' : 'en'; };
 const WST_I18N = {
   en: { title: 'Waste collection', bins: { bio: 'Organic', paper: 'Paper', recycling: 'Recycling', residual: 'General waste' }, none: 'no date', today: 'today', tomorrow: 'tomorrow', inDays: (n) => `in ${n} days`, loading: 'Loading waste calendar …', pickupToday: 'Collection today:', alsoTomorrow: 'tomorrow:', putOut: 'Put out today:', pickupTomorrow: '(collection tomorrow)', next: 'Next collection:', nothing: 'No dates in the calendar', and: ' and ' },
@@ -35,7 +35,7 @@ class WasteStreetCard extends HTMLElement {
     try {
       const a = new Date(); a.setHours(0, 0, 0, 0);
       const b = new Date(a.getTime() + (this._c.days || 60) * 864e5);
-      this._ev = await this._hass.callApi('GET', `calendars/${this._c.entity}?start=${encodeURIComponent(a.toISOString())}&end=${encodeURIComponent(b.toISOString())}`);
+      this._ev = await this._hass.callApi('GET', `calendars/${encodeURIComponent(this._c.entity)}?start=${encodeURIComponent(a.toISOString())}&end=${encodeURIComponent(b.toISOString())}`);
     } catch (e) { console.warn('waste-street-card', e); this._ev = this._ev || []; }
     this._render();
   }
@@ -69,7 +69,7 @@ class WasteStreetCard extends HTMLElement {
     else if (tomorrow.length) head = `<b>${T.putOut}</b> ${esc(names(tomorrow))} ${T.pickupTomorrow}`;
     else { const nx = bins.find((b) => b.d != null); head = nx ? `${T.next} <b>${esc(nx.t.label)}</b>, ${rel(nx)} (${fmt(nx.w)})` : T.nothing; }
     const n = Math.max(1, bins.length), W = 400;
-    const bin = (t) => `<polygon points="-11,-34 11,-34 9,0 -9,0" fill="${t.body}"/><line x1="-8" y1="-26" x2="8" y2="-26" stroke="rgba(255,255,255,.18)" stroke-width="1.5"/><rect x="-13" y="-40" width="26" height="7" rx="2.5" fill="${t.lid}"/><rect x="10" y="-38" width="6" height="3" rx="1" fill="${t.lid}"/><circle cx="7" cy="-1" r="4.2" fill="#15171a"/><circle cx="7" cy="-1" r="1.4" fill="#8a8f96"/>`;
+    const bin = (t) => `<polygon points="-11,-34 11,-34 9,0 -9,0" fill="${esc(t.body)}"/><line x1="-8" y1="-26" x2="8" y2="-26" stroke="rgba(255,255,255,.18)" stroke-width="1.5"/><rect x="-13" y="-40" width="26" height="7" rx="2.5" fill="${esc(t.lid)}"/><rect x="10" y="-38" width="6" height="3" rx="1" fill="${esc(t.lid)}"/><circle cx="7" cy="-1" r="4.2" fill="#15171a"/><circle cx="7" cy="-1" r="1.4" fill="#8a8f96"/>`;
     let s = '';
     for (let x = 6; x < W; x += 16) s += `<path d="M${x},92V62l4,-5l4,5V92Z" class="fe"/>`;
     s += '<line x1="0" y1="70" x2="400" y2="70" class="ra"/><line x1="0" y1="84" x2="400" y2="84" class="ra"/>';

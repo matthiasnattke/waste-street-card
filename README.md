@@ -11,7 +11,10 @@ Your waste collection calendar as a little street scene: bins wait behind the fe
 
 ## Installation
 
-**HACS:** HACS → ⋮ → *Custom repositories* → add this repository with type *Dashboard* → install → reload the browser.
+**HACS (recommended):** open HACS, search for **Waste Street Card**, install it and reload the browser.
+
+If it does not show up yet: HACS → ⋮ → *Custom repositories* → add this repository with type *Dashboard* → install → reload the browser.
+
 **Manual:** copy `waste-street-card.js` to `config/www/` and add `/local/waste-street-card.js` as a JavaScript module resource.
 
 ## Options
